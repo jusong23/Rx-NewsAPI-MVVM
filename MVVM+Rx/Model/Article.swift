@@ -7,26 +7,23 @@
 
 import Foundation
 
-// MARK: - Article
-struct Article: Codable {
+// MARK: - ArticleResponse
+struct ArticleResponse: Codable {
     let status: String
     let totalResults: Int
-    let articles: [ArticleElement]
+    let articles: [Article]
 }
 
-// MARK: - ArticleElement
-struct ArticleElement: Codable {
+// MARK: - Article
+struct Article: Codable {
     let source: Source
     let author: String?
-    let title, description: String
+    let title: String?
+    let description: String
     let url: String
     let urlToImage: String?
-    let publishedAt: Date
+    let publishedAt: String?
     let content: String
-
-    enum CodingKeys: String, CodingKey {
-        case source
-    }
 }
 
 // MARK: - Source

@@ -15,31 +15,14 @@ public class SimpleError: Error {
 
 // 확장성을 위해 프로토콜 생성
 protocol ArticleServiceProtocol {
-    func fetchNews() -> Observable<[ArticleElement]>
-}
-
-// 더미데이터 입력하여 서버에서 가져온 거 처럼 테스트가 가능
-class dummyArticleService: ArticleServiceProtocol {
-    func fetchNews() -> Observable<[ArticleElement]> {
-        return Observable.create { (emitter) -> Disposable in
-            
-//            // dummy data 1
-//            ArticleElement(source: Source(id: "dummy", name: "dummy"), author: "dummy", title: "dummy", description: "dummy", url: "dummy", urlToImage: "dummy", publishedAt: "dummy", content: "dummy")
-//            // dummy data 2
-//            ArticleElement(source: Source(id: "dummy", name: "dummy"), author: "dummy", title: "dummy", description: "dummy", url: "dummy", urlToImage: "dummy", publishedAt: "dummy", content: "dummy")
-            
-            return Disposables.create()
-        }
-    }
-    
-    
+    func fetchNews() -> Observable<[Article]>
 }
 
 // fetch class
 class ArticleService: ArticleServiceProtocol {
-    func fetchNews() -> Observable<[ArticleElement]> { // 🔩 model struct name
+    func fetchNews() -> Observable<[Article]> { // 🔩 model struct name
         return Observable.create { (emitter) in
-            let newsUrl = "https://newsapi.org/v2/everything?q=tesla&from=2023-01-09&sortBy=publishedAt&apiKey=ec15f841011f4f9a82c7dee79a0289fc" // 🔩 url
+            let newsUrl = "https://newsapi.org/v2/everything?q=tesla&from=2023-01-10&sortBy=publishedAt&apiKey=ec15f841011f4f9a82c7dee79a0289fc" // 🔩 url
 
             // [1st] URL instance 작성
             guard let url = URL(string: newsUrl) else {
@@ -61,9 +44,9 @@ class ArticleService: ArticleServiceProtocol {
 
                 do {
                     let decoder = JSONDecoder()
-                    let article = try decoder.decode(ArticleElement.self, from: data) // 🔩 model struct name
+                    let articleResponse = try decoder.decode(ArticleResponse.self, from: data) // 🔩 model struct name
                     
-//                    emitter.onNext([article])
+                    emitter.onNext(articleResponse.articles)
                     emitter.onCompleted()
                 } catch {
                     emitter.onError(SimpleError())
@@ -72,6 +55,21 @@ class ArticleService: ArticleServiceProtocol {
             }
             task.resume() // suspend 상태의 task 깨우기
 
+            return Disposables.create()
+        }
+    }
+}
+
+// 더미데이터 입력하여 서버에서 가져온 거 처럼 테스트가 가능
+class dummyArticleService: ArticleServiceProtocol {
+    func fetchNews() -> Observable<[Article]> {
+        return Observable.create { (emitter) -> Disposable in
+            
+//            // dummy data 1
+//            ArticleElement(source: Source(id: "dummy", name: "dummy"), author: "dummy", title: "dummy", description: "dummy", url: "dummy", urlToImage: "dummy", publishedAt: "dummy", content: "dummy")
+//            // dummy data 2
+//            ArticleElement(source: Source(id: "dummy", name: "dummy"), author: "dummy", title: "dummy", description: "dummy", url: "dummy", urlToImage: "dummy", publishedAt: "dummy", content: "dummy")
+            
             return Disposables.create()
         }
     }
